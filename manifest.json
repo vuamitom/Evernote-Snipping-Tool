@@ -1,0 +1,19 @@
+{
+  "name": "Evernote Snipping Tool ",
+  "version": "1.1",
+  "permissions": [
+    "tabs", "http://*/*", "https://*/*","notifications"
+  ],
+  "description": "Instant snipping to Evernote. Capture everything that triggers your interest the moment you see it", 
+  "browser_action": {
+      "default_title": "Snipping tool for Evernote",
+      "default_icon": "icon16.png"
+  },
+  "background_page": "background.html",
+  "icons": {
+      "16": "icon16.png",
+	  "48": "icon48.png",
+	  "128": "icon128.png"
+  },
+  "options_page":"fancy-settings/source/index.html"
+}

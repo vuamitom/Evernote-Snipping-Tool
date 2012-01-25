@@ -1,0 +1,225 @@
+.modal{
+	width:100%;
+	height:1000px;
+	position:absolute;
+	z-index:50000;
+	left:0px;
+	top:0px;
+	margin:0px;
+}
+
+canvas{
+	border:1px solid #d8d9db;
+	cursor: crosshair;
+}
+
+#popup{
+	top: 0px;
+	left: 0px;
+	margin:0px;
+	width: 100%;
+	height: 100%;
+	position:absolute;
+	z-index: 70000;
+	vertical-align:middle;
+}
+
+#snipControl{
+
+	background: #f1f5f6;
+	width: 400px;
+	height: 800px;
+	position:absolute;
+	vertical-align:middle;
+	display:block;
+	border: 1px solid #b2b2b2;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+	
+	-moz-transition-property:  height;  
+    -moz-transition-duration: 1s; 
+    -moz-transition-timing-function: ease-out;
+	
+	-webkit-transition-property:  height;  
+    -webkit-transition-duration: 1s; 
+    -webkit-transition-timing-function: ease-out;
+}
+
+#snipControl > div:first-child{
+	width:100%;
+	height:35px;
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		color-stop(25%,#ddf8da), 
+		color-stop(75%,#90c26e), 		
+		color-stop(25%,#ddf8da)
+	);
+	vertical-align: bottom;
+}
+#snipControl > div:first-child div{
+	color: #666;
+	font-family: Century Gothic;
+	font-weight: bold;
+	font-size: 16px;
+	margin: 0px 2px;
+	padding: 5px 10px;
+	
+}
+
+#snipControl > div:nth-child(2){
+	width:100%;
+	height:auto;
+	overflow:none;
+}
+
+#snipControl div > div:nth-child(2){
+	padding-left:10px;
+	padding-right:9px;
+}
+/*
+#snipControl div div{
+	margin-left:auto;
+	margin-right:auto;
+	height:auto;
+	width:100%;
+}
+*/
+
+
+#cvsContainer canvas{
+	margin-left:auto;
+	margin-right: auto;
+
+	
+}
+
+#popup button {
+	color: #797e7e;
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#eff8e5), 
+		to(#dbf1cb)
+	);
+
+	-text-shadow:
+		0px -1px 0px rgba(000,000,000,0.4),
+		0px 1px 0px rgba(255,255,255,0.3);
+		
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius:3px;
+	border: 1px solid #d9d9d9;
+	font-weight:bold;
+	padding:3px 5px;
+	cursor: pointer;
+}
+
+#popup button:disabled{
+	color:#afaeae;
+}
+#toolbox{
+	float:right;
+}
+
+#commbox{
+	float:left;
+}
+#evernoteBut{
+	margin-left:0px;
+	margin-right:auto;
+	float:left;
+	margin-top :0px;
+	margin-top:0px;
+	
+	
+}
+.notebooksList{
+	float: right;
+	padding: 0px;
+	margin: 0px;
+	color: #797e7e;
+	padding:3px 5px;
+	border: 1px solid #d9d9d9;
+}
+.myForm{
+	padding-left: 10px;
+	font-size: 12px;
+
+	color: #797e7e;
+	clear:both;
+	display:table;
+	padding-bottom:0px;
+	margin:0px;
+}
+
+.myForm input:focus{
+	background-color: #fff;
+}
+
+.myForm input{
+	background-color: #eee;
+	border: 1px solid #d9d9d9;
+	-webkit-border-radius: 3px;
+	-moz-border-radius:3px;
+	font-size:12px;
+	padding: 2px 2px;
+	margin: 0px;
+	height: 20px;
+}
+.myForm span{
+	padding-left:4px;
+	font-size:12px;
+	
+}
+.myForm input[type=checkBox]{
+
+	margin-top:5spx;
+	padding-bottom:0px;
+	margin-bottom:0px;
+	background-color:#fff;
+	height:13px;
+	border:1px solid #d9d9d9;
+}
+.myForm > div {
+	display: table-row;
+	padding: 1px 1px;
+	margin: 0px;
+}
+.myForm div > div {
+	display: table-cell;
+	padding: 1px 1px;
+	margin:0px;
+	width:auto;
+}
+
+#statusBar{
+	clear: both;
+	font-size:11px;
+	color:#797e7e;
+	padding-left: 10px;
+}
+
+#authForm{
+	margin:0px;
+	padding:0px;
+}
+
+#processRunner{
+	float:right;
+	border: 2px #fff;
+	margin-right:10px;
+	margin-top:3px;
+	display:none;
+}
+
+#snipControl #closeBut{
+	float:right;
+	font-weight:bold;
+	font-size:16px;
+	padding-top:0px;
+	padding-right:0px;
+	margin-top:0px;
+	margin-right:0px;
+	cursor:pointer;
+}
