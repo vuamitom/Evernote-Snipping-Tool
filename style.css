@@ -38,11 +38,11 @@ canvas{
     -webkit-border-radius: 3px;
 	
 	-moz-transition-property:  height;  
-    -moz-transition-duration: 1s; 
+    -moz-transition-duration: 0.5s; 
     -moz-transition-timing-function: ease-out;
 	
 	-webkit-transition-property:  height;  
-    -webkit-transition-duration: 1s; 
+    -webkit-transition-duration: 0.3s; 
     -webkit-transition-timing-function: ease-out;
 }
 
@@ -167,6 +167,9 @@ canvas{
 	margin: 0px;
 	height: 20px;
 }
+.myForm label{
+    float:left;
+}
 .myForm span{
 	padding-left:4px;
 	font-size:12px;
@@ -198,6 +201,7 @@ canvas{
 	font-size:11px;
 	color:#797e7e;
 	padding-left: 10px;
+    float:left;
 }
 
 #authForm{

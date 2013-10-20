@@ -1,19 +1,23 @@
 {
-  "name": "Evernote Snipping Tool ",
-  "version": "1.1",
-  "permissions": [
-    "tabs", "http://*/*", "https://*/*","notifications"
-  ],
-  "description": "Instant snipping to Evernote. Capture everything that triggers your interest the moment you see it", 
-  "browser_action": {
-      "default_title": "Snipping tool for Evernote",
-      "default_icon": "icon16.png"
-  },
-  "background_page": "background.html",
-  "icons": {
+   "background": {
+      "persistence": false,
+      "scripts": [ "js/jquery-1.6.2.min.js", "fancy-settings/source/lib/store.js", "js/bgaction.js" ]
+   },
+   "browser_action": {
+      "default_icon": "icon16.png",
+      "default_title": "Snipping tool for Evernote"
+   },
+   "description": "Instant snipping to Evernote. Capture everything that triggers your interest the moment you see it",
+   "icons": {
+      "128": "icon128.png",
       "16": "icon16.png",
-	  "48": "icon48.png",
-	  "128": "icon128.png"
-  },
-  "options_page":"fancy-settings/source/index.html"
+      "48": "icon48.png"
+   },
+   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDUeFF1lzW7M+n6Ux1E4rjHeyDulSDxIoOD8HluHwnM+L3vTH+mS3PPe5TvyjJ9RpNPCElTByBlyQ3tGeZuOk//29vXmIv585IQpub/QgeqifWDNjo1BNA/jtSsRJIov8wBo+FoMWU+znFpc+4ZSMLEf2/vP7qFKEJA1j0swecdnwIDAQAB",
+   "manifest_version": 2,
+   "name": "Evernote Snipping Tool ",
+   "options_page": "fancy-settings/source/index.html",
+   "permissions": [ "tabs", "http://*/*", "https://*/*", "notifications" ],
+   "update_url": "http://clients2.google.com/service/update2/crx",
+   "version": "1.4"
 }

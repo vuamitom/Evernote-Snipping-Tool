@@ -13,7 +13,7 @@
 
 /*! @source http://purl.eligrey.com/github/canvas-toBlob.js/blob/master/canvas-toBlob.js */
 
-(function(view) {
+var getBlobFromCanvas = (function(view) {
 "use strict";
 var
 	  Uint8Array = view.Uint8Array
@@ -68,42 +68,49 @@ if (Uint8Array) {
 		, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51
 	]);
 }
+console.log("toBlob.js add function toBlob to canvas");
 if (HTMLCanvasElement && !HTMLCanvasElement.prototype.toBlob) {
-	HTMLCanvasElement.prototype.toBlob = function(callback, type /*, ...args*/) {
-		  if (!type) {
+	var getCanvasBlob = function(canvas, callback, type /*, ...args*/) {
+		console.log("starting to get canvas blob");
+		if (!type) {
 			type = "image/png";
-		} if (this.mozGetAsFile) {
-			return this.mozGetAsFile("canvas", type);
+		} 
+		
+		if (canvas.mozGetAsFile) {
+			return canvas.mozGetAsFile("canvas", type);
 		}
+		//console.log("declare variables " + canvas.toDataURL + " " + is_base64_regex + " " + BlobBuilder);
 		var
 			  args = Array.prototype.slice.call(arguments, 1)
-			, dataURI = this.toDataURL.apply(this, args)
+			, dataURI = canvas.toDataURL.apply(canvas, args)
 			, header_end = dataURI.indexOf(",")
 			, data = dataURI.substring(header_end + 1)
 			, is_base64 = is_base64_regex.test(dataURI.substring(0, header_end))
-			, BlobBuilder = view.BlobBuilder || view.WebKitBlobBuilder || view.MozBlobBuilder
-			, bb = new BlobBuilder
 			, blob
 		;
-		if (BlobBuilder.fake) {
-			// no reason to decode a data: URI that's just going to become a data URI again
-			blob = bb.getBlob(type);
+		
+		
+		if (Uint8Array) {
+			console.log("toBlob.js Unit8Array");
 			if (is_base64) {
-				blob.encoding = "base64";
+				console.log("decode_base64 = " + decode_base64);
+				blob = new Blob([decode_base64(data)]);
 			} else {
-				blob.encoding = "URI";
+				console.log("decodeURLComponent = " + decodeURLComponent);
+				blob = new Blob([decodeURIComponent(data)]);
 			}
-			blob.data = data;
-			blob.size = data.length;
-		} else if (Uint8Array) {
-			if (is_base64) {
-				bb.append(decode_base64(data));
-			} else {
-				bb.append(decodeURIComponent(data));
-			}
-			blob = bb.getBlob(type);
+
+			//blob = bb.getBlob(type);
 		}
+		console.log("callingback = " + callback);
 		callback(blob);
 	};
+	console.log("returning function getblobfromcanvas");
+	return getCanvasBlob;
 }
-}(self));
+else 
+	return null;
+
+//console.log("canvas has toBlob = " + HTMLCanvasElement.prototype.toBlob);
+
+}(window));

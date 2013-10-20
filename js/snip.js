@@ -146,8 +146,12 @@ function keyUpHandler(event){
 	//console.log('key code = ' + code);
 	switch(code){
 		case 13: //press ENTER
-		removeModal();
-		setTimeout('takeSnapshot()',200); //buffer time to clean up screen;
+        var popup = document.getElementById('popup');
+        var modal = $('.modal');
+        if(!popup && modal && modal.length > 0){
+		    removeModal();
+		    setTimeout('takeSnapshot()',200); //buffer time to clean up screen;
+        }
 		break;
 		case 27://press ESC
 		onexit();
@@ -177,6 +181,7 @@ chrome.extension.onRequest.addListener(
 	function(request, sender, sendResponse) {
 		
 		//create pop up
+        console.log("background request : " + request.opt);
 		if(request.opt == "captureDone"){
 		
 			var srcX = (request.startPoint.x  < request.endPoint.x)? request.startPoint.x : request.endPoint.x; srcX++; // -1 to account for the border
@@ -187,17 +192,16 @@ chrome.extension.onRequest.addListener(
 			var newPopup = $('<div id="popup" ><div id="snipControl"><div><div>Snip<div id="closeBut" title="close (or press ESC)">X</div></div></div>\
 										 <div><div id="cvsContainer" style="width:' + size.cvsContainerW + 'px; height:' + size.cvsContainerH + 'px; ">\
 										 <canvas id="snipCvs" width="' + size.cvsW + '" height="'+ size.cvsH +'" style="margin-left:' + size.cvsContainerPaddingLeft +'px;margin-top:' + size.cvsContainerPaddingTop + 'px"></canvas></div>\
-										 <div id="controlBar"><button id="evernoteBut">Evernote</button><button id="editBut">Edit</button></div>\
-										 <div id="statusBar"><span></span><canvas id="processRunner" width="' + processRunnerSize.width+'" height="'+ processRunnerSize.height+'"></canvas></div></div></div></div>').appendTo('body');		
-			addListenerToEvernoteBut();
-			addListenerToEditBut();
+										 <div id="controlBar"><button id="evernoteBut">Evernote</button></div>\
+										 <div id="statusBar"><span ></span><canvas id="processRunner" width="' + processRunnerSize.width+'" height="'+ processRunnerSize.height+'"></canvas></div></div></div></div>').appendTo('body');		
+            addListenerToEvernoteBut();
+			//addListenerToEditBut();
 			//adjust pop up size
 			var popup = $('#snipControl');
 			popup.css('width',size.popupW+'px');
 			popup.css('height',size.popupH + 'px');
 			
 			centerPopup(popup, size.popupW, size.popupH);
-			//$('#snipControl > div:nth-child(2)').css('height', h + 100 - 16 + 'px');
 			//create an image
 			var img = new Image();
 			img.src = request.imageData;
@@ -256,6 +260,7 @@ chrome.extension.onRequest.addListener(
 
 		else if(request.opt == "syncStateDone"){
 			// authentication complete - stop loading screen. 
+            console.log("Sync state done .... " + request.evernoteBook);
 			if(request.evernoteBook!=null && request.evernoteBook!= undefined){
 				evernoteBooks = request.evernoteBook;
 				shardId = request.evernoteShardId;
@@ -264,7 +269,6 @@ chrome.extension.onRequest.addListener(
 				defaultSettings.notebook = request.defNotebook;
 				displayNotebookLists();
 				//addToEvernote();
-				
 			}
 			//remove auth form
 			$('#authForm:parent').remove();
@@ -276,6 +280,7 @@ chrome.extension.onRequest.addListener(
 			var img = new Image();
 			img.src= request.imageData;
 		}
+        updateUI();
 		sendResponse({result:'success'});
 	});
 function sizingPopup(cvsStartPoint, cvsEndPoint){
@@ -366,32 +371,44 @@ function addToEvernote(){
 			document.getElementById('evernoteBut').disabled = true;
 			//var imgData;
 			var controlCvs = document.getElementById("snipCvs");
-			
-			controlCvs.toBlob(function(blob){
-				//myBlob = blob;
-				//save to file 
-				
-				
-				var fr = new FileReader();
-				fr.onloadend = function(evt){
+			//console.log("snip.js " + HTMLCanvasElement.prototype.toBlob);
+			var processBlob = function(blob){
+						//myBlob = blob;
+						//save to file 
+						console.log("snip.js " + "converting to blob");
+						
+						var fr = new FileReader();
+						fr.onloadend = function(evt){
+							
+							if(evt.target.readyState == FileReader.DONE){			
+								setStatus('Uploading Image');
+								startProcessRunner();
+								attachImageUsingNativeXHR(evt.target.result, "snipper" + (new Date).getTime(),"image/png");
+								hidePopUpTimer = setTimeout('hidePopUp()',800); //hide popup to avoid obscure user's view
+							}
+						}			
+						fr.readAsBinaryString(blob);
+		
+					};
 					
-					if(evt.target.readyState == FileReader.DONE){			
-						setStatus('Uploading Image');
-						startProcessRunner();
-						attachImageUsingNativeXHR(evt.target.result, "snipper" + (new Date).getTime(),"image/png");
-						hidePopUpTimer = setTimeout('hidePopUp()',800); //hide popup to avoid obscure user's view
-					}
-				}			
-				fr.readAsBinaryString(blob);
 
-			},"image/png");
-		}
+			if(HTMLCanvasElement.prototype.toBlob){
+				controlCvs.toBlob(processBlob,"image/png");
+					
+			}
+			else if(getBlobFromCanvas){
+				console.log("getblobfromcanvas = " + getBlobFromCanvas);
+				getBlobFromCanvas(controlCvs, processBlob,"image/png");
+			}
+			//controlCvs.toBlob(); //in chrome extension, since HTMLCanvasElement prototype is modified by content script 
+			//in a separate execution context, which is not effective on an element of the page
+			
+	}
 	else{
 		var hasForm = document.getElementById('authForm');	
-		if(hasForm==null || hasForm == undefined){
-			addAuthForm();
-		}
-	}
+        if(!hasForm)
+		    addAuthForm();
+	}	
 }
 
 function addAuthForm(){
@@ -411,7 +428,7 @@ function showAuthFormHandler(){
 			<div><input type="text" name="username" placeholder="Username" size="30"/></div>\
 			<div><input type="checkBox" name="rememberMe" /><span>Remember</span></div></div>\
 			<div><div><input placeholder="Password" type="password" name="password" size="30"/></div>\
-			<div><button id="signinBut">Submit</button></div></div></form> </div>').insertBefore('#statusBar');
+			<div><button id="signinBut">Sign In</button></div></div></form> </div>').insertBefore('#statusBar');
 			setStatus("Authentication Requried");
 			var signinBut = document.getElementById("signinBut");
 			signinBut.onclick = function(){
@@ -435,8 +452,10 @@ function showAuthFormHandler(){
 								setStatus('Logged in successfully');
 								stopProcessRunner();
 								chrome.extension.sendRequest({opt:"syncState"}, function(response) {
-									
 								});
+
+                                //change evernote button label
+                                //updateUI();
 							}
 						}
 
@@ -453,8 +472,21 @@ function setStatus(mssg){
 	$('#statusBar > span').html(mssg);
 }
 
+function updateUI(){
+    console.log("Updateing UI");
+    if(evernoteBooks!=null){
+        var snipControl = document.querySelector("#snipControl");
+        snipControl.addEventListener("webkitTransitionEnd", showEditNoteForm, false);
+        $("#snipControl").css('height', parseInt($('#snipControl').css('height'))  + 80 + 'px');
+        document.getElementById('evernoteBut').innerText = "Create Note";
+    }else{
+        document.getElementById('evernoteBut').innerText = "Evernote";
+    }
+}
+
+
 function addListenerToEvernoteBut(){
-	var button = document.getElementById("evernoteBut");
+    var button = document.getElementById('evernoteBut');
 	button.onclick = function(){
 		addToEvernote();
 	};
@@ -490,11 +522,14 @@ function showEditNoteForm(){
 	//var parent = $("#snipControl > div:nth-child(2)");
 			
 			$('<div class="myForm"><form id="editForm" ><div>\
-			<div style="width:60px">Tags</div>\
+			<div style="width:60px"><label for="tagnames">Tags</label></div>\
 			<div><input type="text" name="tagnames" placeholder="Tags - separated by commas" size="30" value="'+ defaultSettings.tagnames+ '"/></div>\
 			</div>\
-			<div><div style="width:60px">Title</div>\
+			<div><div style="width:60px"><label for="title">Title</label></div>\
 			<div><input placeholder="Title" type="text" name="title" value="'+ defaultSettings.title+ '" size="30"/></div>\
+            </div>\
+            <div><div style="width:60px"><label for="comment">Comment</label></div>\
+            <div><input placeholder="Comment" type="text" name="comment" style="width:100%" size="30"/></div>\
 			</div></form> </div>').insertAfter('#controlBar');
 			
 			$('#editBut').html('Save');
@@ -601,9 +636,12 @@ function attachImageUsingNativeXHR(imgData,filename, filetype){
 		     url - link to the site where the iamge was captured
  *******************************************************/
 function createNewEvernoteNote(attachId, url){
+        defaultSettings.tagnames = $('input[name="tagnames"]').val();
+        defaultSettings.title = $('input[name="title"]').val();
+        var comment =$('input[name="comment"]').val();
 		var boundary = generateBoundary();
 		//"d518f49d-8d13-40fa-9739-246e1bf467b1"
-		var data = createMultiPartPayload({format:"json",title:defaultSettings.title, notebook:defaultSettings.notebook,tagnames:defaultSettings.tagnames,content:defaultSettings.content,unsetLocation:"true",sourceURL:url,attachment:attachId},boundary);			
+		var data = createMultiPartPayload({format:"json",title:defaultSettings.title, notebook:defaultSettings.notebook,tagnames:defaultSettings.tagnames,content:comment,unsetLocation:"true",sourceURL:url,attachment:attachId},boundary);			
 		$.ajax({
 			type: 'POST',
 			url:"https://www.evernote.com/shard/" + shardId + "/note/",
@@ -618,11 +656,6 @@ function createNewEvernoteNote(attachId, url){
 			success: function(data){
 				console.log(data);
 				//on success, display notification
-				/*
-				setStatus('Note created successfully');
-				stopProcessRunner();
-				setTimeout('onexit()', 1000);
-				*/
 				sendNotification('Create new note', 'Snip uploaded successfully');
 			},
 			error: function(xhr, textStatus, errorThrown){
