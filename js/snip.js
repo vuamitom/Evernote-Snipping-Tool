@@ -84,7 +84,7 @@ function modalize(cvs){
 function modalPressed(cvs,event){
 	isDrag = true;
 	clickPos = {x:event.offsetX,y:event.offsetY};
-	console.log(clickPos);
+	//console.log(clickPos);
 }
 
 //handle mouse press and drag
@@ -116,7 +116,7 @@ function modalReleased(cvs,event){
 
 function takeSnapshot(){
 	chrome.extension.sendRequest({opt:"capture",startPoint: clickPos, endPoint:endPos}, function(response) {
-		console.log("END REQUET");
+		//console.log("END REQUET");
   		//console.log(response.farewell);
 	});
 	
@@ -185,7 +185,7 @@ chrome.extension.onRequest.addListener(
 	function(request, sender, sendResponse) {
 		
 		//create pop up
-        console.log("background request : " + request.opt);
+        //console.log("background request : " + request.opt);
 		if(request.opt == "captureDone"){
 		
 			var srcX = (request.startPoint.x  < request.endPoint.x)? request.startPoint.x : request.endPoint.x; srcX++; // -1 to account for the border
@@ -209,12 +209,12 @@ chrome.extension.onRequest.addListener(
 			//create an image
 			var img = new Image();
 			img.src = request.imageData;
-			console.log("got bg request");
+			//console.log("got bg request");
 			img.onload = function(){
 				//sizing image based on 			
 				ctx.drawImage(img, srcX, srcY, size.cvsW, size.cvsH, 0, 0,size.cvsW, size.cvsH );
 				//ctx.drawImage(img,0,0);
-				console.log("Drawn Image");
+				//console.log("Drawn Image");
 			}		
 		
 
@@ -264,7 +264,7 @@ chrome.extension.onRequest.addListener(
 
 		else if(request.opt == "syncStateDone"){
 			// authentication complete - stop loading screen. 
-            console.log("Sync state done .... " + request.evernoteBook);
+            //console.log("Sync state done .... " + request.evernoteBook);
 			if(request.evernoteBook!=null && request.evernoteBook!= undefined){
 				evernoteBooks = request.evernoteBook;
 				shardId = request.evernoteShardId;
@@ -366,7 +366,7 @@ var loginUrl = "https://www.evernote.com/jclip.action?login";
 var hidePopUpTimer = null;
 
 function addToEvernote(){
-	console.log("add data to evernote");
+	//console.log("add data to evernote");
 
 	//check if the user is authenticated
 	if(evernoteBooks !=null ){
@@ -579,7 +579,7 @@ function attachImage(imgData,filename){
 	data: data,
 	success: function(data){
 		//if logged in failed 
-		if(data.indexOf('Not+logged+in') >= 0 ){
+		if(data.indexOf('Not+logged+in') >= 0 || data.indexOf("Not%20logged%20in")>=0 ){
 			console.log("missing authentication");
 			var hasForm = document.getElementById('authForm');	
 			if(hasForm==null || hasForm == undefined){
@@ -591,7 +591,7 @@ function attachImage(imgData,filename){
 			//get attached file id		
 			var matches= /%3Cid%3E((.)*)%3C%2Fid%3E/.exec(data);		
 			//create a new note with the file as attachment
-			console.log("attachment id = " + matches[1]);
+			//console.log("attachment id = " + matches[1]);
 			createNewEvernoteNote(matches[1], "http://snipper.com");
 		}
 	},
@@ -611,7 +611,7 @@ function attachImageUsingNativeXHR(imgData,filename, filetype){
 
 		if(xhr.readyState == 4){
 	
-			if(xhr.responseText.indexOf('Not+logged+in') >= 0 ){
+			if(xhr.responseText.indexOf('Not+logged+in') >= 0 || xhr.responseText.indexOf("Not%20logged%20in")>=0 ){
 				if(hidePopUpTimer!=null) 
 					clearTimeout(hidePopUpTimer);
 				showPopUp(); //re-display pop up to have user login
@@ -624,7 +624,7 @@ function attachImageUsingNativeXHR(imgData,filename, filetype){
 			else{
 				var matches= /%3Cid%3E((.)*)%3C%2Fid%3E/.exec(xhr.responseText);		
 				//create a new note with the file as attachment
-				console.log("attachment id = " + matches[1]);
+				//console.log("attachment id = " + matches[1]);
 				//setStatus('Creating note');
 				onexit();
 				createNewEvernoteNote(matches[1], window.location.href);

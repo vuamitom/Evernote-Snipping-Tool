@@ -13,11 +13,10 @@
       "16": "icon16.png",
       "48": "icon48.png"
    },
-   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDUeFF1lzW7M+n6Ux1E4rjHeyDulSDxIoOD8HluHwnM+L3vTH+mS3PPe5TvyjJ9RpNPCElTByBlyQ3tGeZuOk//29vXmIv585IQpub/QgeqifWDNjo1BNA/jtSsRJIov8wBo+FoMWU+znFpc+4ZSMLEf2/vP7qFKEJA1j0swecdnwIDAQAB",
    "manifest_version": 2,
    "name": "Evernote Snipping Tool ",
    "options_page": "fancy-settings/source/index.html",
    "permissions": [ "tabs", "http://*/*", "https://*/*", "notifications" ],
    "update_url": "http://clients2.google.com/service/update2/crx",
-   "version": "1.4"
+   "version": "1.5.2"
 }
