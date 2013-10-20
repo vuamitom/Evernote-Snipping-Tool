@@ -1,5 +1,5 @@
 
-
+debugger; 
 //this piece of code need to be called once only
 var modalSize; //size of the modalwindow
 var cvs;
@@ -384,6 +384,9 @@ function addToEvernote(){
 								setStatus('Uploading Image');
 								startProcessRunner();
 								attachImageUsingNativeXHR(evt.target.result, "snipper" + (new Date).getTime(),"image/png");
+								defaultSettings.tagnames = $('input[name="tagnames"]').val();
+        						defaultSettings.title = $('input[name="title"]').val();
+        						defaultSettings.comment =$('input[name="comment"]').val();
 								hidePopUpTimer = setTimeout('hidePopUp()',800); //hide popup to avoid obscure user's view
 							}
 						}			
@@ -636,12 +639,17 @@ function attachImageUsingNativeXHR(imgData,filename, filetype){
 		     url - link to the site where the iamge was captured
  *******************************************************/
 function createNewEvernoteNote(attachId, url){
-        defaultSettings.tagnames = $('input[name="tagnames"]').val();
-        defaultSettings.title = $('input[name="title"]').val();
-        var comment =$('input[name="comment"]').val();
+        
 		var boundary = generateBoundary();
 		//"d518f49d-8d13-40fa-9739-246e1bf467b1"
-		var data = createMultiPartPayload({format:"json",title:defaultSettings.title, notebook:defaultSettings.notebook,tagnames:defaultSettings.tagnames,content:comment,unsetLocation:"true",sourceURL:url,attachment:attachId},boundary);			
+		var data = createMultiPartPayload({format:"json",
+											title:defaultSettings.title, 
+											notebook:defaultSettings.notebook,
+											tagnames:defaultSettings.tagnames,
+											content:defaultSettings.comment,unsetLocation:"true",
+											sourceURL:url,
+											attachment:attachId}
+											,boundary);			
 		$.ajax({
 			type: 'POST',
 			url:"https://www.evernote.com/shard/" + shardId + "/note/",
