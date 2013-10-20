@@ -17,47 +17,51 @@ if (XMLHttpRequest.prototype.sendAsBinary === undefined) {
 }
 //all necessary step to setup a page
 function startSnipping(){
-    modalSize = {width:window.innerWidth+50, height:(window.innerHeight+200)};
-	//create a modal window 
-	//body.css('overflow','hidden');
-	//console.log("width='"+window.innerWidth+"' height='"+window.innerHeight);
-	var modalW =  $("<div class='modal'><canvas id='viewPatch' width='"+modalSize.width+"' height='"+ modalSize.height+"'></canvas></div>")
-	modalW.prependTo(body);
-	var offsetX = (document.scrollLeft)? document.scrollLeft : window.pageXOffset;
-	var offsetY = (document.scrollTop)? document.scrollTop: window.pageYOffset;
-	modalW.css({'top':offsetY+'px','left':offsetX+'px'});
-	
-	//prevent page scrolling
-	
-	window.onscroll = function(){
-		//window.scrollTo(0,0);
-		
-		var modalW = $('.modal');		
+	var exist = $('#viewPatch'); //check if modal already shown 
+	if(!exist || exist.length == 0){
+
+	    modalSize = {width:window.innerWidth+50, height:(window.innerHeight+200)};
+		//create a modal window 
+		//body.css('overflow','hidden');
+		//console.log("width='"+window.innerWidth+"' height='"+window.innerHeight);
+
+		var modalW =  $("<div class='modal'><canvas id='viewPatch' width='"+modalSize.width+"' height='"+ modalSize.height+"'></canvas></div>")
+		modalW.prependTo(body);
 		var offsetX = (document.scrollLeft)? document.scrollLeft : window.pageXOffset;
 		var offsetY = (document.scrollTop)? document.scrollTop: window.pageYOffset;
 		modalW.css({'top':offsetY+'px','left':offsetX+'px'});
 		
+		//prevent page scrolling
+		
+		window.onscroll = function(){
+			//window.scrollTo(0,0);
+			
+			var modalW = $('.modal');		
+			var offsetX = (document.scrollLeft)? document.scrollLeft : window.pageXOffset;
+			var offsetY = (document.scrollTop)? document.scrollTop: window.pageYOffset;
+			modalW.css({'top':offsetY+'px','left':offsetX+'px'});
+			
+		}
+
+		//detect keypress for shortcut command
+		document.onkeyup = function(){
+			keyUpHandler(event);
+		}
+
+		//init canvas, add listeners
+		cvs = document.getElementById('viewPatch');
+		cvs.onmousedown = function(){
+			modalPressed(this,event);	
+		};
+
+		cvs.onmousemove = function(){
+			modalMoved(this,event);
+		};
+		cvs.onmouseup = function(){
+			modalReleased(this,event);
+		};
+		modalize(cvs);
 	}
-
-	//detect keypress for shortcut command
-	document.onkeyup = function(){
-		keyUpHandler(event);
-	}
-
-	//init canvas, add listeners
-	cvs = document.getElementById('viewPatch');
-	cvs.onmousedown = function(){
-		modalPressed(this,event);	
-	};
-
-	cvs.onmousemove = function(){
-		modalMoved(this,event);
-	};
-	cvs.onmouseup = function(){
-		modalReleased(this,event);
-	};
-	modalize(cvs);
-
 }
 
 
@@ -664,7 +668,7 @@ function createNewEvernoteNote(attachId, url){
 			success: function(data){
 				console.log(data);
 				//on success, display notification
-				sendNotification('Create new note', 'Snip uploaded successfully');
+				sendNotification('Create new note', 'Snip ' + defaultSettings.title + ' uploaded successfully');
 			},
 			error: function(xhr, textStatus, errorThrown){
 				console.log(errorThrown);
